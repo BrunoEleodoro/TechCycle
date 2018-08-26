@@ -35,9 +35,9 @@ public class MainInteractorImpl implements MainInteractor {
         RequestQueue queue = Volley.newRequestQueue(presenter.getContext());
         String origin = route.getPointA().latitude + "," + route.getPointA().longitude;
         String destiny = route.getPointB().latitude + "," + route.getPointB().longitude;
-
-        Log.i("script", "url="+"https://tuba.work/directions?origin="+origin+"&destination="+destiny);
-        StringRequest request = new StringRequest(Request.Method.GET, "https://tuba.work/directions?origin="+origin+"&destination="+destiny, new Response.Listener<String>() {
+        String url = "url="+"https://tuba.work/directions?origin="+origin+"&destination="+destiny;
+        Log.i("script", "url=  "+url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try

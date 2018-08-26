@@ -17,6 +17,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.brunoeleodoro.techcycle.models.MinhaRota;
+import me.brunoeleodoro.techcycle.models.RotaEscolhida;
 import me.brunoeleodoro.techcycle.models.Route;
 import me.brunoeleodoro.techcycle.select_points.models.Rota;
 import me.brunoeleodoro.techcycle.select_points.models.Step;
@@ -105,6 +107,7 @@ public class SelectPointsInteractorImpl implements SelectPointsInteractor {
                     }
 
                     presenter.setRotas(rotas);
+                    MinhaRota.setRotas(rotas);
                 }
                 catch (Exception e)
                 {

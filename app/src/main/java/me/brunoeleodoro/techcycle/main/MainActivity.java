@@ -1,10 +1,19 @@
 package me.brunoeleodoro.techcycle.main;
 
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import me.brunoeleodoro.techcycle.R;
+import me.brunoeleodoro.techcycle.main.cards.CardFragment;
 import me.brunoeleodoro.techcycle.models.Directions;
+import me.brunoeleodoro.techcycle.models.MinhaRota;
+import me.brunoeleodoro.techcycle.models.RotaEscolhida;
 import me.brunoeleodoro.techcycle.models.Route;
+import me.brunoeleodoro.techcycle.select_points.models.Rota;
+import me.brunoeleodoro.techcycle.select_points.models.Step;
 
 import android.Manifest;
 import android.content.Context;
@@ -28,6 +37,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, MainView {
@@ -35,6 +45,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private MainPresenter presenter;
     private LatLng PointA;
+    private ViewPager viewPager;
+    private List<Fragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,22 +56,72 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        viewPager = findViewById(R.id.viewPager);
 
         presenter = new MainPresenterImpl();
         presenter.setView(this);
 
+        int i = 0;
+        while(i < MinhaRota.getRotas().size())
+        {
+            CardFragment cardFragment = new CardFragment();
+            cardFragment.setRota(MinhaRota.getRotas().get(i));
+            fragments.add(cardFragment);
+            i++;
+        }
+
+        viewPager.setAdapter(new RotasPagerAdapter(getSupportFragmentManager()));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int i = 0;
+                while(i < fragments.size())
+                {
+                    CardFragment cardFragment = (CardFragment) fragments.get(i);
+                    if(i == position)
+                    {
+                        cardFragment.elevate();
+                        montarPolylines(i);
+                    }
+                    else
+                    {
+                        cardFragment.reduce();
+                    }
+                    i++;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        viewPager.setOffscreenPageLimit(4);
+
+
     }
+    class RotasPagerAdapter extends FragmentPagerAdapter
+    {
 
+        public RotasPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return MinhaRota.getRotas().size();
+        }
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -78,7 +140,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         //manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new Listener(googleMap));
-        manager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new Listener(googleMap), null);
+        //manager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new Listener(googleMap), null);
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -89,11 +151,46 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.addPolyline(new PolylineOptions().addAll())
     }
 
+
+
     @Override
     public void error(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    public void montarPolylines(int index)
+    {
+        mMap.clear();
+        try
+        {
+            Rota rota = MinhaRota.getRotas().get(index);
+            int i = 0;
+            while(i < rota.getSteps().size())
+            {
+                //Step step = rota.getSteps().get(i);
+                PolylineOptions polylineOptions = new PolylineOptions();
+                int k = 0;
+                while(k < MinhaRota.getRotas().get(index).getSteps().get(i).getLats_lngs().size())
+                {
+                    //Log.i("script", "lat="+lats_lngs.get(k).latitude + ", lng="+lats_lngs.get(k).longitude);
+                    polylineOptions.add(MinhaRota.getRotas().get(index).getSteps().get(i).getLats_lngs().get(k));
+                    polylineOptions.color(Color.parseColor(MinhaRota.getRotas().get(index).getSteps().get(i).getCor()));
+                    polylineOptions.width(10);
+                    polylineOptions.geodesic(true);
+                    k++;
+                }
+
+                mMap.addPolyline(polylineOptions);
+                i++;
+            }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(RotaEscolhida.getPointA(), 14.0f ));
+        }
+        catch (Exception e)
+        {
+
+        }
+
+    }
     @Override
     public void setListDirections(List<Directions> direcoes) {
 

@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import me.brunoeleodoro.techcycle.R;
 import me.brunoeleodoro.techcycle.base.BaseActivity;
+import me.brunoeleodoro.techcycle.main.MainActivity;
+import me.brunoeleodoro.techcycle.main.MainPresenter;
 import me.brunoeleodoro.techcycle.models.RotaEscolhida;
 import me.brunoeleodoro.techcycle.models.Route;
 import me.brunoeleodoro.techcycle.select_points.adapters.PointsAdapter;
@@ -208,12 +210,7 @@ public class SelectPointsActivity extends BaseActivity implements SelectPointsVi
 
     @Override
     public void setRotas(List<Rota> rotas) {
-        int i = 0;
-        while(i < rotas.size())
-        {
-            Rota rota = rotas.get(i);
-            Toast.makeText(this, rota.getTipo_rota()+"="+rota.getPreco_total(), Toast.LENGTH_SHORT).show();
-            i++;
-        }
+        Intent intent  = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

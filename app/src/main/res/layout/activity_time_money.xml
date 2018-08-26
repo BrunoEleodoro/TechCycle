@@ -4,25 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".time_money.TimeMoneyActivity">
+    tools:context=".time_money.TimeMoneyActivity"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:background="#39c4cd">
 
+    <!--
+
+    #103960
+    #fff
+    -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nivel de economia $"
+        android:textColor="#fff"
+        android:textSize="14sp"
+        android:layout_centerHorizontal="true"/>
 
     <com.xw.repo.BubbleSeekBar
         android:id="@+id/bubbleSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:bsb_bubble_color="#ffc107"
+        app:bsb_bubble_color="#fff"
         app:bsb_bubble_text_color="@color/colorPrimaryDark"
         app:bsb_max="50.0"
-        app:bsb_min="-50"
+        app:bsb_min="0"
         app:bsb_progress="0"
-        app:bsb_second_track_color="#ffc107"
+        app:bsb_second_track_color="#103960"
         app:bsb_section_count="5"
         app:bsb_section_text_position="bottom_sides"
         app:bsb_show_progress_in_float="true"
         app:bsb_show_section_mark="true"
         app:bsb_show_section_text="true"
         app:bsb_show_thumb_text="true"
-        app:bsb_track_color="@android:color/holo_red_dark"/>
+        app:bsb_track_color="#fff"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
 </RelativeLayout>

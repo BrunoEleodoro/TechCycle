@@ -3,6 +3,7 @@ package me.brunoeleodoro.techcycle.main;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import me.brunoeleodoro.techcycle.R;
+import me.brunoeleodoro.techcycle.models.Directions;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,9 +25,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.util.List;
+
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, MainView {
 
     private GoogleMap mMap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +55,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
                         this, R.raw.estilo));
@@ -79,6 +79,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //LatLng latLng = new LatLng(-2333,-44444);
         //mMap.addPolyline(new PolylineOptions().addAll())
     }
+
+    @Override
+    public void error(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setListDirections(List<Directions> direcoes) {
+
+    }
+
     class Listener implements LocationListener {
         GoogleMap googleMap;
 

@@ -34,6 +34,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private MainPresenter presenter;
+    private LatLng PointA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +143,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 1.0f ));
 
             LatLng pointA = new LatLng(location.getLatitude(), location.getLongitude());
+            pointA = pointA;
             //LatLng pointA = new LatLng(-23.61617455261591,-46.72864213585854);
             LatLng pointB = new LatLng(-23.569681, -46.658331);
 

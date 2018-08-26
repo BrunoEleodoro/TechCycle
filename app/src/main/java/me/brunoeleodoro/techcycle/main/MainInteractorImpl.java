@@ -36,11 +36,13 @@ public class MainInteractorImpl implements MainInteractor {
         String origin = route.getPointA().latitude + "," + route.getPointA().longitude;
         String destiny = route.getPointB().latitude + "," + route.getPointB().longitude;
 
+        Log.i("script", "url="+"https://tuba.work/directions?origin="+origin+"&destination="+destiny);
         StringRequest request = new StringRequest(Request.Method.GET, "https://tuba.work/directions?origin="+origin+"&destination="+destiny, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try
                 {
+                    Log.i("script", "response="+response);
                     JSONArray array = new JSONArray(response);
                     List<Directions> direcoes = new ArrayList<>();
                     int i = 0;
@@ -60,6 +62,22 @@ public class MainInteractorImpl implements MainInteractor {
                         horaChegada.setTime_zone(object_hora_chegada.optString("time_zone"));
                         horaChegada.setValue(object_hora_chegada.optString("value"));
 
+                        JSONArray polylines = object.getJSONArray("polyline");
+
+                        List<LatLng> points = new ArrayList<>();
+                        int k = 0;
+                        while(k < polylines.length())
+                        {
+                            JSONObject object_point = polylines.getJSONObject(k);
+
+                            points.add(new LatLng(
+                                    Double.parseDouble(object_point.optString("lat")),
+                                    Double.parseDouble(object_point.optString("lng"))
+                            ));
+
+                            k++;
+                        }
+
                         Directions direction = new Directions(
                             object.optString("tipo"),
                             object.optString("nome"),
@@ -68,13 +86,15 @@ public class MainInteractorImpl implements MainInteractor {
                             object.optString("paradas"),
                             object.optString("polyline"),
                                     horaSaida,
-                                    horaChegada
+                                    horaChegada,
+                                    points
                             );
 
                         direcoes.add(direction);
 
                         i++;
                     }
+                    presenter.setListDirections(direcoes);
                 }
                 catch (Exception e)
                 {

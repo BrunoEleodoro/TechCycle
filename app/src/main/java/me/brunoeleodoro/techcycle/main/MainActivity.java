@@ -4,10 +4,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import me.brunoeleodoro.techcycle.R;
 import me.brunoeleodoro.techcycle.models.Directions;
+import me.brunoeleodoro.techcycle.models.Route;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Path;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,7 +33,7 @@ import java.util.List;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, MainView {
 
     private GoogleMap mMap;
-
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        presenter = new MainPresenterImpl();
+        presenter.setView(this);
+
     }
 
 
@@ -69,7 +76,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // for Activity#requestPermissions for more details.
             return;
         }
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new Listener(googleMap));
+        //manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new Listener(googleMap));
+        manager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new Listener(googleMap), null);
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -88,9 +96,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void setListDirections(List<Directions> direcoes) {
 
+        int i = 0;
+        mMap.clear();
+        while(i < direcoes.size())
+        {
+            Directions direction = direcoes.get(i);
+            List<LatLng> lats_lngs = direction.getLat_lngs();
+            Log.i("script", "lats_lngs size="+lats_lngs.size());
+            PolylineOptions polylineOptions = new PolylineOptions();
+            int k = 0;
+            while(k < lats_lngs.size())
+            {
+                Log.i("script", "lat="+lats_lngs.get(k).latitude + ", lng="+lats_lngs.get(k).longitude);
+                polylineOptions.add(lats_lngs.get(k));
+                polylineOptions.color(Color.parseColor(direction.getCor()));
+                polylineOptions.width(5);
+                polylineOptions.geodesic(true);
+                k++;
+            }
+
+            mMap.addPolyline(polylineOptions);
+
+            i++;
+        }
+        Directions direction = direcoes.get(direcoes.size() - 1);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(direction.getLat_lngs().get(direction.getLat_lngs().size() - 1).latitude, direction.getLat_lngs().get(direction.getLat_lngs().size() - 1).longitude), 14.0f ));
+
+        Toast.makeText(this, "Finished", Toast.LENGTH_SHORT).show();
     }
 
     class Listener implements LocationListener {
+
         GoogleMap googleMap;
 
         public Listener(GoogleMap googleMap) {
@@ -104,6 +140,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     new LatLng(location.getLatitude(), location.getLongitude())));
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()), 12f));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 1.0f ));
+
+            LatLng pointA = new LatLng(location.getLatitude(), location.getLongitude());
+            //LatLng pointA = new LatLng(-23.61617455261591,-46.72864213585854);
+            LatLng pointB = new LatLng(-23.569681, -46.658331);
+
+            Route route = new Route(pointA, pointB);
+            presenter.findRoute(route);
+            Toast.makeText(MainActivity.this, "Loading...", Toast.LENGTH_SHORT).show();
         }
 
         @Override

@@ -1,5 +1,8 @@
 package me.brunoeleodoro.techcycle.models;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Directions  {
@@ -12,12 +15,13 @@ public class Directions  {
     String polyline;
     HoraSaida horasSaida;
     HoraChegada horasChegada;
+    List<LatLng> lat_lngs = new ArrayList<>();
 
     public Directions() {
 
     }
 
-    public Directions(String tipo, String nome, String numero, String cor, String paradas, String polyline, HoraSaida horasSaida, HoraChegada horasChegada) {
+    public Directions(String tipo, String nome, String numero, String cor, String paradas, String polyline, HoraSaida horasSaida, HoraChegada horasChegada, List<LatLng> lat_lngs) {
         this.tipo = tipo;
         this.nome = nome;
         this.numero = numero;
@@ -26,6 +30,7 @@ public class Directions  {
         this.polyline = polyline;
         this.horasSaida = horasSaida;
         this.horasChegada = horasChegada;
+        this.lat_lngs = lat_lngs;
     }
 
     public String getTipo() {
@@ -90,6 +95,14 @@ public class Directions  {
 
     public void setHorasChegada(HoraChegada horasChegada) {
         this.horasChegada = horasChegada;
+    }
+
+    public List<LatLng> getLat_lngs() {
+        return lat_lngs;
+    }
+
+    public void setLat_lngs(List<LatLng> lat_lngs) {
+        this.lat_lngs = lat_lngs;
     }
 
     /*

@@ -16,7 +16,7 @@ exports.directions = function(req, res){
       var url = "https://maps.googleapis.com/maps/api/directions/json?"+
             "origin="+origin+ 
             "&destination="+destination+ 
-            "&key=AIzaSyCzbD-j9HiJdGnjc-EUU-lVMvpEp99e6j4"+
+            "&key=YOUR_API_KEY_HERE"+
             "&mode=transit";
       count_walks++;
       request(url, function (error, resp, body) {
